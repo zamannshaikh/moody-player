@@ -2,9 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const connectDB = require("./src/db/db.js");
 const songRoutes = require("./src/routes/songs.routes.js");
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 connectDB();
 app.use('/', songRoutes);
 

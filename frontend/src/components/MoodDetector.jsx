@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 import "./MoodDetector.css";
+import axios from "axios";
 
-const MoodDetector = () => {
+const MoodDetector = ({setSongs}) => {
   const videoRef = useRef(null);
 
   const [expression, setExpression] = useState("");
@@ -39,7 +40,7 @@ const MoodDetector = () => {
         return;
       }
 
-      console.log("Detecting mood...");
+    
       const detections = await faceapi
         .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
@@ -61,6 +62,20 @@ const MoodDetector = () => {
     } catch (err) {
       console.error("Detection failed:", err);
     }
+    // Send mood to backend
+    axios.get(`http://localhost:3000/songs?mood=${expression}`)
+    .then((response) => {
+      console.log("Songs fetched based on mood:", response.data.songs);
+          setSongs(response.data.songs); // Update the Songs state with fetched songs
+    })
+    .catch((error) => {
+      console.error("Error fetching songs:", error);
+    }
+    );
+
+    
+
+    
   };
 
   // Load models and start webcam on mount
